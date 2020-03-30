@@ -21,7 +21,9 @@ namespace CareerCloudMVCCore2.Controllers
         // GET: ApplicantProfiles
         public async Task<IActionResult> Index()
         {
-            var jOB_PORTAL_DBContext = _context.ApplicantProfiles.Include(a => a.CountryCodeNavigation).Include(a => a.LoginNavigation);
+            var jOB_PORTAL_DBContext = _context.ApplicantProfiles
+                .Include(a => a.CountryCodeNavigation)
+                .Include(a => a.LoginNavigation);
             return View(await jOB_PORTAL_DBContext.ToListAsync());
         }
 
@@ -46,10 +48,10 @@ namespace CareerCloudMVCCore2.Controllers
         }
 
         // GET: ApplicantProfiles/Create
-        public IActionResult Create()
+        public IActionResult Create(Guid Id)
         {
             ViewData["CountryCode"] = new SelectList(_context.SystemCountryCodes, "Code", "Code");
-            ViewData["Login"] = new SelectList(_context.SecurityLogins, "Id", "EmailAddress");
+            ViewData["Login"] = new SelectList(_context.SecurityLogins, "Id", "Login");
             return View();
         }
 
@@ -58,8 +60,10 @@ namespace CareerCloudMVCCore2.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Login,CurrentSalary,CurrentRate,Currency,CountryCode,StateProvinceCode,StreetAddress,CityTown,ZipPostalCode,TimeStamp")] ApplicantProfiles applicantProfiles)
+        public async Task<IActionResult> Create([Bind("CurrentSalary,CurrentRate,Currency,CountryCode,StateProvinceCode,StreetAddress,CityTown,ZipPostalCode")] ApplicantProfiles applicantProfiles,Guid id)
         {
+            applicantProfiles.Login = id;
+           
             if (ModelState.IsValid)
             {
                 applicantProfiles.Id = Guid.NewGuid();
@@ -68,7 +72,7 @@ namespace CareerCloudMVCCore2.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["CountryCode"] = new SelectList(_context.SystemCountryCodes, "Code", "Code", applicantProfiles.CountryCode);
-            ViewData["Login"] = new SelectList(_context.SecurityLogins, "Id", "EmailAddress", applicantProfiles.Login);
+            ViewData["Login"] = new SelectList(_context.SecurityLogins, "Id", "Login", applicantProfiles.Login);
             return View(applicantProfiles);
         }
 

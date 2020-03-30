@@ -45,7 +45,7 @@ namespace CareerCloudMVCCore2.Controllers
         }
 
         // GET: CompanyJobsDescriptions/Create
-        public IActionResult Create()
+        public IActionResult Create(Guid id)
         {
             ViewData["Job"] = new SelectList(_context.CompanyJobs, "Id", "Id");
             return View();
@@ -56,14 +56,15 @@ namespace CareerCloudMVCCore2.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Job,JobName,JobDescriptions,TimeStamp")] CompanyJobsDescriptions companyJobsDescriptions)
+        public async Task<IActionResult> Create([Bind("JobName,JobDescriptions")] CompanyJobsDescriptions companyJobsDescriptions,Guid id)
         {
+            companyJobsDescriptions.Job = id;
             if (ModelState.IsValid)
             {
                 companyJobsDescriptions.Id = Guid.NewGuid();
                 _context.Add(companyJobsDescriptions);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Create),"CompanyJobSkills", new {id=companyJobsDescriptions.Job});
             }
             ViewData["Job"] = new SelectList(_context.CompanyJobs, "Id", "Id", companyJobsDescriptions.Job);
             return View(companyJobsDescriptions);
@@ -153,23 +154,6 @@ namespace CareerCloudMVCCore2.Controllers
         }
         
 
-             public IActionResult JobDescriptionDetails(Guid? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var companyJobsDescriptions = _context.CompanyJobsDescriptions
-             
-                .Where(m => m.Job == id);
-            if (companyJobsDescriptions == null)
-            {
-                return NotFound();
-            }
-
-            return View(companyJobsDescriptions);
-        }
 
         private bool CompanyJobsDescriptionsExists(Guid id)
         {

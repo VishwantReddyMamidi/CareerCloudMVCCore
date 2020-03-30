@@ -60,7 +60,8 @@ namespace CareerCloudMVCCore2.Controllers
                 securityLogins.Id = Guid.NewGuid();
                 _context.Add(securityLogins);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                //return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Create), "ApplicantProfiles", new { id = securityLogins.Id });
             }
             return View(securityLogins);
         }

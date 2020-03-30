@@ -4,9 +4,9 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+@*<h1>Company Details</h1>*@
 
-<div>
+@*<div>
     <h4>CompanyProfiles</h4>
     <hr />
     <dl class="row">
@@ -35,15 +35,15 @@
             @Html.DisplayFor(model => model.ContactName)
         </dd>
     </dl>
+</div>*@
+<div>
+    @Html.Partial("_CompanyLocations", Model.CompanyLocations) 
 </div>
 <div>
-    @Html.Partial("_CompanyLocations", Model.CompanyLocations);
+    @Html.Partial("_CompanyDescriptions", Model.CompanyDescriptions)
 </div>
 <div>
-    @Html.Partial("_CompanyDescriptions", Model.CompanyDescriptions);
-</div>
-<div>
-    @Html.Partial("_CompanyJobs", Model.CompanyJobs);
+    @Html.Partial("_CompanyJobs", Model.CompanyJobs,new ViewDataDictionary(ViewData) { { "Id", Model.Id } })
 </div>
 <div>
     <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |

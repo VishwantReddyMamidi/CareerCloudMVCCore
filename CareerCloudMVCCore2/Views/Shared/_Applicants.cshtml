@@ -1,10 +1,4 @@
-﻿@model IEnumerable<CareerCloudMVCCore2.Models.CompanyJobSkills>
-
-@{
-    ViewData["Title"] = "SkillDetails";
-}
-
-<h1>SkillDetails</h1>
+﻿@model IEnumerable<CareerCloudMVCCore2.Models.ApplicantJobApplications>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -13,13 +7,10 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Skill)
+                @Html.DisplayNameFor(model => model.ApplicationDate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.SkillLevel)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Importance)
+                @Html.DisplayNameFor(model => model.ApplicantNavigation.LoginNavigation.FullName)
             </th>
             <th></th>
         </tr>
@@ -28,13 +19,10 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Skill)
+                @Html.DisplayFor(modelItem => item.ApplicationDate)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.SkillLevel)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Importance)
+                @Html.DisplayFor(modelItem => item.ApplicantNavigation.LoginNavigation.FullName)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

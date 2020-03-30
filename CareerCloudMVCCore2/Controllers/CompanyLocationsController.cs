@@ -45,7 +45,7 @@ namespace CareerCloudMVCCore2.Controllers
         }
 
         // GET: CompanyLocations/Create
-        public IActionResult Create()
+        public IActionResult Create(Guid id)
         {
             ViewData["Company"] = new SelectList(_context.CompanyProfiles, "Id", "ContactPhone");
             return View();
@@ -56,14 +56,15 @@ namespace CareerCloudMVCCore2.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Company,CountryCode,StateProvinceCode,StreetAddress,CityTown,ZipPostalCode,TimeStamp")] CompanyLocations companyLocations)
+        public async Task<IActionResult> Create([Bind("CountryCode,StateProvinceCode,StreetAddress,CityTown,ZipPostalCode")] CompanyLocations companyLocations,Guid id)
         {
+            companyLocations.Company = id;
             if (ModelState.IsValid)
             {
                 companyLocations.Id = Guid.NewGuid();
                 _context.Add(companyLocations);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index),"CompanyProfiles");
             }
             ViewData["Company"] = new SelectList(_context.CompanyProfiles, "Id", "ContactPhone", companyLocations.Company);
             return View(companyLocations);

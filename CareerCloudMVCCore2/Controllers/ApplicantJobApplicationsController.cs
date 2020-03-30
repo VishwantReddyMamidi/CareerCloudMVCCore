@@ -21,7 +21,9 @@ namespace CareerCloudMVCCore2.Controllers
         // GET: ApplicantJobApplications
         public async Task<IActionResult> Index()
         {
-            var jOB_PORTAL_DBContext = _context.ApplicantJobApplications.Include(a => a.ApplicantNavigation).Include(a => a.JobNavigation);
+            var jOB_PORTAL_DBContext = _context.ApplicantJobApplications
+                .Include(a => a.ApplicantNavigation)
+                .Include(a => a.JobNavigation);
             return View(await jOB_PORTAL_DBContext.ToListAsync());
         }
 
@@ -46,10 +48,12 @@ namespace CareerCloudMVCCore2.Controllers
         }
 
         // GET: ApplicantJobApplications/Create
-        public IActionResult Create()
+        public IActionResult Create(Guid Applicant,Guid Job)
         {
-            ViewData["Applicant"] = new SelectList(_context.ApplicantProfiles, "Id", "Id");
-            ViewData["Job"] = new SelectList(_context.CompanyJobs, "Id", "Id");
+            //ViewData["Applicant"] = new SelectList(_context.ApplicantProfiles, "Id", "Id");
+            //ViewData["Job"] = new SelectList(_context.CompanyJobs, "Id", "Id");
+            ViewData["Applicant"] = Applicant;
+            ViewData["Job"] = Job;
             return View();
         }
 
@@ -58,8 +62,11 @@ namespace CareerCloudMVCCore2.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Applicant,Job,ApplicationDate,TimeStamp")] ApplicantJobApplications applicantJobApplications)
+        public async Task<IActionResult> Create(ApplicantJobApplications applicantJobApplications, Guid Applicant, Guid Job)
         {
+
+            applicantJobApplications.Applicant = Applicant;
+            applicantJobApplications.Job = Job;
             if (ModelState.IsValid)
             {
                 applicantJobApplications.Id = Guid.NewGuid();

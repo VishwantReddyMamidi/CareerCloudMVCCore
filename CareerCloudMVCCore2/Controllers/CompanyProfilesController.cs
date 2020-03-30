@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using CareerCloudMVCCore2.Models;
+using CareerCloudMVCCore2.Models.ViewModel;
 
 namespace CareerCloudMVCCore2.Controllers
 {
@@ -22,7 +23,15 @@ namespace CareerCloudMVCCore2.Controllers
         public async Task<IActionResult> Index()
         {
             var companyProfiles = await _context.CompanyProfiles
+                .Include(cd=>cd.CompanyDescriptions)
                 .ToListAsync();
+
+            //var viewModel = new ViewModel();
+            //viewModel.CompanyProfiles = _context.CompanyProfiles
+            //    .Include(a => a.CompanyDescriptions)
+            //    .ToList();
+
+
             return View(companyProfiles);
         }
 
@@ -37,8 +46,9 @@ namespace CareerCloudMVCCore2.Controllers
             var companyProfiles = await _context.CompanyProfiles
                 .Include(a=>a.CompanyLocations)
                 .Include(a=>a.CompanyDescriptions)
-                .Include(a=>a.CompanyJobs)
-                .ThenInclude(a=>a.CompanyJobSkills)
+                .Include(a=>a.CompanyJobs).ThenInclude(a => a.CompanyJobSkills)
+                .Include(a=>a.CompanyJobs).ThenInclude(a=> a.CompanyJobsDescriptions)
+                .Include(a=>a.CompanyJobs).ThenInclude(a=> a.CompanyJobEducations)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             //_context.Entry(companyProfiles).Collection(c => c.CompanyJobs).Load();
@@ -62,14 +72,15 @@ namespace CareerCloudMVCCore2.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,RegistrationDate,CompanyWebsite,ContactPhone,ContactName,CompanyLogo,TimeStamp")] CompanyProfiles companyProfiles)
+        public async Task<IActionResult> Create([Bind("RegistrationDate,CompanyWebsite,ContactPhone,ContactName,CompanyLogo")] CompanyProfiles companyProfiles)
         {
             if (ModelState.IsValid)
             {
                 companyProfiles.Id = Guid.NewGuid();
                 _context.Add(companyProfiles);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                //return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Create), "CompanyDescriptions", new { id = companyProfiles.Id });
             }
             return View(companyProfiles);
         }

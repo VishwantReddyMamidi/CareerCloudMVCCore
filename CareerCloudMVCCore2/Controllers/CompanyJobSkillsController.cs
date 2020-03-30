@@ -45,7 +45,7 @@ namespace CareerCloudMVCCore2.Controllers
         }
 
         // GET: CompanyJobSkills/Create
-        public IActionResult Create()
+        public IActionResult Create(Guid guid)
         {
             ViewData["Job"] = new SelectList(_context.CompanyJobs, "Id", "Id");
             return View();
@@ -56,14 +56,15 @@ namespace CareerCloudMVCCore2.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Job,Skill,SkillLevel,Importance,TimeStamp")] CompanyJobSkills companyJobSkills)
+        public async Task<IActionResult> Create([Bind("Skill,SkillLevel,Importance")] CompanyJobSkills companyJobSkills,Guid id)
         {
+            companyJobSkills.Job = id;
             if (ModelState.IsValid)
             {
                 companyJobSkills.Id = Guid.NewGuid();
                 _context.Add(companyJobSkills);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Create),"CompanyJobEducations", new {id=companyJobSkills.Job});
             }
             ViewData["Job"] = new SelectList(_context.CompanyJobs, "Id", "Id", companyJobSkills.Job);
             return View(companyJobSkills);
@@ -150,24 +151,6 @@ namespace CareerCloudMVCCore2.Controllers
             _context.CompanyJobSkills.Remove(companyJobSkills);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        public  IActionResult SkillDetails(Guid? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var companyJobSkills =  _context.CompanyJobSkills
-                .Where(m => m.Job == id);
-
-            if (companyJobSkills == null)
-            {
-                return NotFound();
-            }
-
-            return View(companyJobSkills);
         }
 
         private bool CompanyJobSkillsExists(Guid id)

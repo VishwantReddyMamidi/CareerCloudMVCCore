@@ -46,7 +46,7 @@ namespace CareerCloudMVCCore2.Controllers
         }
 
         // GET: CompanyDescriptions/Create
-        public IActionResult Create()
+        public IActionResult Create(Guid id)
         {
             ViewData["Company"] = new SelectList(_context.CompanyProfiles, "Id", "ContactPhone");
             ViewData["LanguageId"] = new SelectList(_context.SystemLanguageCodes, "LanguageId", "LanguageId");
@@ -58,14 +58,15 @@ namespace CareerCloudMVCCore2.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Company,LanguageId,CompanyName,CompanyDescription,TimeStamp")] CompanyDescriptions companyDescriptions)
+        public async Task<IActionResult> Create([Bind("LanguageId,CompanyName,CompanyDescription")] CompanyDescriptions companyDescriptions,Guid id)
         {
+            companyDescriptions.Company = id;
             if (ModelState.IsValid)
             {
                 companyDescriptions.Id = Guid.NewGuid();
                 _context.Add(companyDescriptions);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Create),"CompanyLocations",new { id = companyDescriptions.Company });
             }
             ViewData["Company"] = new SelectList(_context.CompanyProfiles, "Id", "ContactPhone", companyDescriptions.Company);
             ViewData["LanguageId"] = new SelectList(_context.SystemLanguageCodes, "LanguageId", "LanguageId", companyDescriptions.LanguageId);

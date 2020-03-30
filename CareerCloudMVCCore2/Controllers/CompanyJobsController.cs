@@ -19,9 +19,15 @@ namespace CareerCloudMVCCore2.Controllers
         }
 
         // GET: CompanyJobs
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(Guid Applicant)
         {
-            var jOB_PORTAL_DBContext = _context.CompanyJobs.Include(c => c.CompanyNavigation);
+            var jOB_PORTAL_DBContext = _context.CompanyJobs
+                .Include(a=>a.CompanyJobsDescriptions)
+                .Include(a=>a.CompanyJobEducations)
+                .Include(a=>a.CompanyJobSkills)
+                .Include(c => c.CompanyNavigation)
+                   .ThenInclude(a=>a.CompanyDescriptions);
+            ViewData["Applicant"] = Applicant;
             return View(await jOB_PORTAL_DBContext.ToListAsync());
         }
 
@@ -34,7 +40,12 @@ namespace CareerCloudMVCCore2.Controllers
             }
 
             var companyJobs = await _context.CompanyJobs
-                .Include(c => c.CompanyNavigation)
+                .Include(a=>a.CompanyJobsDescriptions)
+                .Include(a=>a.CompanyJobEducations)
+                .Include(a=>a.CompanyJobSkills)
+                .Include(a=>a.ApplicantJobApplications)
+                  .ThenInclude(a=>a.ApplicantNavigation)
+                    .ThenInclude(a=>a.LoginNavigation)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (companyJobs == null)
             {
@@ -45,7 +56,7 @@ namespace CareerCloudMVCCore2.Controllers
         }
 
         // GET: CompanyJobs/Create
-        public IActionResult Create()
+        public IActionResult Create(Guid id)
         {
             ViewData["Company"] = new SelectList(_context.CompanyProfiles, "Id", "ContactPhone");
             return View();
@@ -56,14 +67,15 @@ namespace CareerCloudMVCCore2.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Company,ProfileCreated,IsInactive,IsCompanyHidden,TimeStamp")] CompanyJobs companyJobs)
+        public async Task<IActionResult> Create([Bind("Company,ProfileCreated,IsInactive,IsCompanyHidden")] CompanyJobs companyJobs,Guid id)
         {
+            companyJobs.Company = id;
             if (ModelState.IsValid)
             {
                 companyJobs.Id = Guid.NewGuid();
                 _context.Add(companyJobs);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Create),"CompanyJobsDescriptions",new {id=companyJobs.Id});
             }
             ViewData["Company"] = new SelectList(_context.CompanyProfiles, "Id", "ContactPhone", companyJobs.Company);
             return View(companyJobs);
@@ -152,6 +164,29 @@ namespace CareerCloudMVCCore2.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        public async Task<IActionResult> ForApplicantDetails(Guid? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var companyJobs = await _context.CompanyJobs
+                .Include(a=>a.CompanyNavigation)
+                .Include(a => a.CompanyJobsDescriptions)
+                .Include(a => a.CompanyJobEducations)
+                .Include(a => a.CompanyJobSkills)
+                .Include(a => a.ApplicantJobApplications)
+                  .ThenInclude(a => a.ApplicantNavigation)
+                    .ThenInclude(a => a.LoginNavigation)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (companyJobs == null)
+            {
+                return NotFound();
+            }
+
+            return View(companyJobs);
+        }
         private bool CompanyJobsExists(Guid id)
         {
             return _context.CompanyJobs.Any(e => e.Id == id);

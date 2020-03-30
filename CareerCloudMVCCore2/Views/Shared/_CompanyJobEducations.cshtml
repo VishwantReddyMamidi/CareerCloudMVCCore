@@ -1,22 +1,17 @@
-﻿@model IEnumerable<CareerCloudMVCCore2.Models.CompanyJobsDescriptions>
-
-@{
-    ViewData["Title"] = "JobDescriptionDetails";
-}
-
-<h1>JobDescriptionDetails</h1>
+﻿@model IEnumerable<CareerCloudMVCCore2.Models.CompanyJobEducations>
 
 <p>
+    <h1>Education Requirements</h1>
     <a asp-action="Create">Create New</a>
 </p>
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.JobName)
+                @Html.DisplayNameFor(model => model.Major)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.JobDescriptions)
+                @Html.DisplayNameFor(model => model.Importance)
             </th>
             <th></th>
         </tr>
@@ -25,10 +20,10 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.JobName)
+                @Html.DisplayFor(modelItem => item.Major)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.JobDescriptions)
+                @Html.DisplayFor(modelItem => item.Importance)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

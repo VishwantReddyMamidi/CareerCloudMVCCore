@@ -53,10 +53,11 @@
                     <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                     <a asp-action="Delete" asp-route-id="@item.Id">Delete</a> |
                     <a asp-controller="ApplicantEducations" asp-action="EducationDetails" asp-route-id="@item.Id">Education</a> |
-                    <a asp-controller="ApplicantJobApplications" asp-action="JobApplications" asp-route-id="@item.Id">Job</a> |
+                    <a asp-controller="ApplicantJobApplications" asp-action="JobApplications" asp-route-id="@item.Id">Applied Jobs</a> |
                     <a asp-controller="ApplicantResumes" asp-action="Resume" asp-route-id="@item.Id">Resume</a> |
                     <a asp-controller="ApplicantSkills" asp-action="Skills" asp-route-id="@item.Id">Skills</a> |
                     <a asp-controller="ApplicantWorkHistories" asp-action="WorkHistory" asp-route-id="@item.Id">WorkHistory</a> |
+                    <a asp-controller="CompanyJobs" asp-action="Index" asp-route-Applicant="@item.Id">Apply Jobs</a> |
 
                 </td>
             </tr>
